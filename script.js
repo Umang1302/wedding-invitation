@@ -138,73 +138,75 @@ function isElementInViewport(el) {
     );
 }
 
-// RSVP Form Handler
+// RSVP Form Handler (only if form exists)
 const rsvpForm = document.getElementById('rsvp-form');
 const formMessage = document.getElementById('form-message');
 
-rsvpForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (rsvpForm && formMessage) {
+    rsvpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    const formData = new FormData(rsvpForm);
-    const data = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        guests: formData.get('guests'),
-        attendance: formData.get('attendance'),
-        message: formData.get('message'),
-        timestamp: new Date().toISOString()
-    };
+        const formData = new FormData(rsvpForm);
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            guests: formData.get('guests'),
+            attendance: formData.get('attendance'),
+            message: formData.get('message'),
+            timestamp: new Date().toISOString()
+        };
 
-    // Show loading state
-    const submitBtn = rsvpForm.querySelector('.btn-submit');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Sending...';
-    submitBtn.disabled = true;
+        // Show loading state
+        const submitBtn = rsvpForm.querySelector('.btn-submit');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Sending...';
+        submitBtn.disabled = true;
 
-    try {
-        // For GitHub Pages deployment, you can integrate with:
-        // 1. Google Forms
-        // 2. Formspree (https://formspree.io/)
-        // 3. EmailJS (https://www.emailjs.com/)
-        // 4. Netlify Forms
-        
-        // Example with Formspree (uncomment and add your form ID):
-        // const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(data)
-        // });
+        try {
+            // For GitHub Pages deployment, you can integrate with:
+            // 1. Google Forms
+            // 2. Formspree (https://formspree.io/)
+            // 3. EmailJS (https://www.emailjs.com/)
+            // 4. Netlify Forms
+            
+            // Example with Formspree (uncomment and add your form ID):
+            // const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify(data)
+            // });
 
-        // For now, simulate successful submission
-        await new Promise(resolve => setTimeout(resolve, 1000));
+            // For now, simulate successful submission
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Log to console (for demo purposes)
-        console.log('RSVP Submission:', data);
+            // Log to console (for demo purposes)
+            console.log('RSVP Submission:', data);
 
-        // Show success message
-        formMessage.textContent = 'Thank you! Your RSVP has been received. We look forward to celebrating with you! ❤️';
-        formMessage.className = 'form-message success';
-        
-        // Reset form
-        rsvpForm.reset();
+            // Show success message
+            formMessage.textContent = 'Thank you! Your RSVP has been received. We look forward to celebrating with you! ❤️';
+            formMessage.className = 'form-message success';
+            
+            // Reset form
+            rsvpForm.reset();
 
-        // Hide message after 5 seconds
-        setTimeout(() => {
-            formMessage.style.display = 'none';
-        }, 5000);
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                formMessage.style.display = 'none';
+            }, 5000);
 
-    } catch (error) {
-        console.error('RSVP Error:', error);
-        formMessage.textContent = 'Oops! Something went wrong. Please try again or contact us directly.';
-        formMessage.className = 'form-message error';
-    } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-});
+        } catch (error) {
+            console.error('RSVP Error:', error);
+            formMessage.textContent = 'Oops! Something went wrong. Please try again or contact us directly.';
+            formMessage.className = 'form-message error';
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+}
 
 // Add animation to couple cards
 document.querySelectorAll('.couple-card').forEach((card, index) => {
