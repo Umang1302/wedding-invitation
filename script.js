@@ -502,7 +502,7 @@ function updateCompleteMenu(menuData) {
     const menuContainer = document.getElementById('menu-container');
     
     if (!menuContainer) {
-        console.error('Menu container not found!');
+        // console.error('Menu container not found!');
         return;
     }
     
@@ -637,6 +637,191 @@ if ('IntersectionObserver' in window) {
     document.querySelectorAll('img[data-src]').forEach(img => {
         imageObserver.observe(img);
     });
+}
+
+// Gallery Media Configuration - Add images or videos here
+// For images: use { type: 'image', src: 'path/to/image.jpg' }
+// For videos: use { type: 'video', src: 'path/to/video.mp4', poster: 'path/to/thumbnail.jpg' }
+const galleryMedia = [
+    { type: 'video', src: 'images/e264acb8-ae0d-4939-9929-2546c5428c11.MP4', poster: 'images/Slider/video-thumbnail.jpg' },
+    { type: 'image', src: 'images/Slider/a33596ae-2bea-45cc-8cd5-3ee3deed60e4.JPG' },
+    { type: 'image', src: 'images/Slider/de9905a7-f2c0-45b0-a124-798748a8958e.JPG' },
+    { type: 'image', src: 'images/Slider/d1480298-d010-47ce-8b83-9d7c6a229a1f.JPG' },
+    { type: 'image', src: 'images/Slider/f7d6fcfb-58e6-4b79-83f5-1ca17511cb57.JPG' },
+    { type: 'image', src: 'images/Slider/6dea215c-bf3e-445a-9bcc-08d05b670c85.JPG' },
+    { type: 'image', src: 'images/Slider/e8911b7a-a147-463f-ab16-962dee89e6d5.JPG' },
+    { type: 'image', src: 'images/Slider/13f497fb-a12a-459f-b4d9-cbeb8fdbf4d3.JPG' }
+];
+
+// Gallery Slider Functionality
+const gallerySlider = document.getElementById('gallery-slider');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const sliderDotsContainer = document.getElementById('sliderDots');
+
+if (gallerySlider && prevBtn && nextBtn && sliderDotsContainer) {
+    // Dynamically create slides from galleryMedia array
+    galleryMedia.forEach((media, index) => {
+        const slide = document.createElement('div');
+        slide.classList.add('gallery-slide');
+        if (index === 0) slide.classList.add('active');
+        
+        if (media.type === 'video') {
+            // Create video element
+            const video = document.createElement('video');
+            video.src = media.src;
+            video.alt = `Wedding Video ${index + 1}`;
+            video.autoplay = false;
+            video.muted = false;
+            video.loop = false;
+            video.playsInline = true;
+            video.preload = 'metadata';
+            if (media.poster) {
+                video.poster = media.poster;
+            }
+            video.classList.add('gallery-video');
+            
+            // Create play button overlay
+            const playBtn = document.createElement('div');
+            playBtn.classList.add('video-play-overlay');
+            playBtn.innerHTML = '<span class="play-icon">▶️</span>';
+            
+            // Toggle play/pause on video or button click
+            const togglePlayPause = (e) => {
+                e.stopPropagation();
+                if (video.paused) {
+                    video.play();
+                    playBtn.style.display = 'none'; // Hide button when playing
+                } else {
+                    video.pause();
+                    playBtn.style.display = 'flex'; // Show button when paused
+                }
+            };
+            
+            video.addEventListener('click', togglePlayPause);
+            playBtn.addEventListener('click', togglePlayPause);
+            
+            // Hide button when video starts playing
+            video.addEventListener('play', () => {
+                slide.dataset.videoPlaying = 'true';
+                playBtn.style.display = 'none';
+            });
+            
+            // Show button when video is paused
+            video.addEventListener('pause', () => {
+                slide.dataset.videoPlaying = 'false';
+                playBtn.style.display = 'flex';
+            });
+            
+            // Show button when video ends
+            video.addEventListener('ended', () => {
+                playBtn.style.display = 'flex';
+            });
+            
+            slide.appendChild(video);
+            slide.appendChild(playBtn);
+        } else {
+            // Create image element
+            const img = document.createElement('img');
+            img.src = media.src;
+            img.alt = `Wedding Photo ${index + 1}`;
+            img.loading = 'lazy';
+            
+            slide.appendChild(img);
+        }
+        
+        gallerySlider.appendChild(slide);
+    });
+
+    const slides = gallerySlider.querySelectorAll('.gallery-slide');
+    let currentSlide = 0;
+
+    // Create dots
+    slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('slider-dot');
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
+        sliderDotsContainer.appendChild(dot);
+    });
+
+    const dots = sliderDotsContainer.querySelectorAll('.slider-dot');
+
+    function updateSlider() {
+        // Pause all videos before switching
+        slides.forEach(slide => {
+            const video = slide.querySelector('video');
+            if (video) {
+                video.pause();
+            }
+        });
+        
+        // Hide all slides
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+        });
+        
+        // Show current slide
+        slides[currentSlide].classList.add('active');
+        
+        // Autoplay video if current slide is a video
+        const currentVideo = slides[currentSlide].querySelector('video');
+        if (currentVideo) {
+            currentVideo.play().catch(err => {
+                console.log('Video autoplay failed:', err);
+            });
+        }
+        
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlider();
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        updateSlider();
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+        updateSlider();
+    }
+
+    // Event listeners
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextSlide();
+    });
+
+    // Touch swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    gallerySlider.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    gallerySlider.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        if (touchEndX < touchStartX - 50) nextSlide(); // Swipe left
+        if (touchEndX > touchStartX + 50) prevSlide(); // Swipe right
+    }
+
+    console.log('Gallery slider initialized with', slides.length, 'slides');
 }
 
 // Console message for customization

@@ -477,6 +477,7 @@ section:not(.hero) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top;
     position: relative;
     z-index: 1;
 }
@@ -548,8 +549,49 @@ section:not(.hero) {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
+    justify-items: center;
+}
+
+/* For 5 events - create a balanced layout */
+@media (min-width: 1200px) {
+    .events-timeline {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .event-card:nth-child(1),
+    .event-card:nth-child(2),
+    .event-card:nth-child(3) {
+        grid-column: span 2;
+    }
+    
+    /* Center the last 2 items on the second row */
+    .event-card:nth-child(4) {
+        grid-column: 2 / span 2;
+    }
+    
+    .event-card:nth-child(5) {
+        grid-column: 4 / span 2;
+    }
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
+    .events-timeline {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Center the 5th item */
+    .event-card:nth-child(5) {
+        grid-column: 1 / -1;
+        justify-self: center;
+    }
+}
+
+@media (max-width: 899px) {
+    .events-timeline {
+        grid-template-columns: 1fr;
+    }
 }
 
 .event-card {
@@ -560,6 +602,8 @@ section:not(.hero) {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-top: 4px solid var(--gold);
     border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 380px;
 }
 
 .event-card:hover {
@@ -839,6 +883,206 @@ section:not(.hero) {
     background: linear-gradient(135deg, var(--bg-medium) 0%, var(--bg-dark) 100%);
 }
 
+.gallery-slider-container {
+    position: relative;
+    max-width: 900px;
+    width: 100%;
+    height: 600px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.7);
+    border: 2px solid var(--gold);
+    background: var(--bg-dark);
+}
+
+/* Landscape aspect ratio for videos */
+@media (min-width: 769px) {
+    .gallery-slider-container {
+        max-width: 1000px;
+        height: 560px;
+    }
+}
+
+.gallery-slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.gallery-slide {
+    min-width: 100%;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-slide.active {
+    display: flex;
+}
+
+.gallery-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.gallery-slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #000;
+    transform: rotate(-90deg) scale(1.78);
+    transform-origin: center center;
+}
+
+/* Ensure video fills landscape properly */
+@media (min-width: 769px) {
+    .gallery-slide video {
+        object-fit: contain;
+        transform: rotate(-90deg) scale(1.5);
+    }
+}
+
+.gallery-video {
+    cursor: pointer;
+}
+
+/* Video Play Button Overlay */
+.video-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    pointer-events: all;
+}
+
+.video-play-overlay:hover {
+    background: rgba(212, 175, 55, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-play-overlay .play-icon {
+    font-size: 3rem;
+    margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+    .video-play-overlay {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .video-play-overlay .play-icon {
+        font-size: 2rem;
+    }
+}
+
+/* Force landscape orientation for videos */
+@media (max-width: 768px) {
+    .gallery-slide video {
+        object-fit: cover;
+        max-height: 100%;
+        transform: rotate(-90deg) scale(1.3);
+    }
+}
+
+/* Slider Buttons */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(212, 175, 55, 0.9);
+    color: var(--bg-dark);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.slider-btn:hover {
+    background: var(--accent-color);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+}
+
+.slider-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.prev-btn {
+    left: 20px;
+}
+
+.next-btn {
+    right: 20px;
+}
+
+.slider-btn span {
+    display: block;
+    line-height: 1;
+}
+
+/* Slider Dots */
+.slider-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+}
+
+.slider-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.slider-dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.2);
+}
+
+.slider-dot.active {
+    background: var(--gold);
+    border-color: white;
+    transform: scale(1.3);
+}
+
+/* Old gallery styles - keeping for backward compatibility */
 .gallery-container {
     display: flex;
     justify-content: center;
@@ -979,6 +1223,116 @@ section:not(.hero) {
     display: block;
 }
 
+/* Venue Section */
+.venue-section {
+    background: var(--bg-dark);
+}
+
+.venue-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.venue-card {
+    background: var(--bg-medium);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.venue-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(212, 175, 55, 0.3);
+}
+
+.venue-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.venue-name {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.venue-address {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.venue-map {
+    margin: 2rem 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--gold);
+}
+
+.venue-map iframe {
+    display: block;
+    width: 100%;
+}
+
+.venue-directions-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bg-dark);
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 1rem;
+}
+
+.venue-directions-btn:hover {
+    background: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+}
+
+.venue-info {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.venue-note {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    background: var(--bg-medium);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid var(--gold);
+}
+
+.venue-note strong {
+    color: var(--gold);
+}
+
+.venue-note small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
 /* Footer */
 .footer {
     background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
@@ -1105,6 +1459,26 @@ section:not(.hero) {
     .couple-name {
         font-size: 2.5rem;
     }
+    
+    .venue-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .venue-name {
+        font-size: 1.6rem;
+    }
+    
+    .venue-address {
+        font-size: 1rem;
+    }
+    
+    .venue-map {
+        margin: 1.5rem 0;
+    }
+    
+    .venue-map iframe {
+        height: 250px;
+    }
 
     .events-timeline {
         grid-template-columns: 1fr;
@@ -1135,9 +1509,49 @@ section:not(.hero) {
         padding: 2rem 1.5rem;
     }
 
-    .radio-group {
-        flex-direction: column;
-        gap: 1rem;
+    .gallery-slider-container {
+        margin: 0 1rem;
+        height: 400px;
+        max-width: calc(100% - 2rem);
+    }
+    
+    .gallery-slide img,
+    .gallery-slide video {
+        object-fit: contain;
+        max-height: 400px;
+    }
+
+    .slider-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .prev-btn {
+        left: 10px;
+    }
+
+    .next-btn {
+        right: 10px;
+    }
+
+    .slider-dots {
+        bottom: 10px;
+        gap: 8px;
+    }
+
+    .slider-dot {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .video-play-overlay {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .video-play-overlay .play-icon {
+        font-size: 2rem;
     }
 
     section {
@@ -1197,6 +1611,30 @@ section:not(.hero) {
     
     .meal-name {
         font-size: 1.3rem;
+    }
+    
+    .gallery-slider-container {
+        height: 350px;
+        margin: 0 0.5rem;
+    }
+    
+    .gallery-slide img,
+    .gallery-slide video {
+        max-height: 350px;
+    }
+    
+    .slider-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .prev-btn {
+        left: 5px;
+    }
+    
+    .next-btn {
+        right: 5px;
     }
     
     .category-items li {
